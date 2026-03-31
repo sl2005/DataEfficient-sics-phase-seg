@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Data-Efficient Surgical Phase Segmentation in Small-Incision Cataract Surgery: A Controlled Study of Vision Foundation Models">
+  <meta name="keywords" content="Surgical Phase Segmentation, Cataract Surgery, Foundation Models, DINOv3, V-JEPA2, Computer Vision, Small Data">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data-Efficient Surgical Phase Segmentation in SICS</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Data-Efficient Surgical Phase Segmentation in Small-Incision Cataract Surgery: A Controlled Study of Vision Foundation Models</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://sl2005.github.io/">Lincoln Spencer</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://songw-sw.github.io/">Song Wang</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://www.crcv.ucf.edu/chenchen/">Chen Chen</a><sup>1</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Department of Computer Science, University of Central Florida</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- arXiv Link. -->
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Teaser / Demo Video -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay controls muted loop playsinline width="100%">
+        <source src="./static/videos/phase_segmentation_demo.mp4" type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        Phase segmentation visualization on a SICS procedure (BL_0172). Ground truth and DINOv3 ViT-7B
+        predictions are shown as colored bars below each frame.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<!-- Pipeline Figure -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="figure-container has-text-centered">
+      <img src="./static/images/paper_pipeline_diagram.png"
+           alt="Pipeline overview diagram"
+           style="width: 100%; max-width: 960px;">
+      <p class="figure-caption">
+        Controlled study pipeline. Encoders are frozen after optional cataract-domain SSL continuation
+        and LoRA adaptation, features are cached once, and the same MS-TCN++ head is trained for all encoders.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Surgical phase segmentation is central to computer-assisted surgery, yet robust models
+            remain difficult to develop when labeled surgical videos are scarce. We study
+            data-efficient phase segmentation for manual small-incision cataract surgery (SICS)
+            through a controlled comparison of visual representations.
+          </p>
+          <p>
+            To isolate representation quality, we pair each visual encoder with the same temporal
+            model (MS-TCN++) under identical training and evaluation settings on SICS-155 (19
+            phases). We compare supervised encoders (ResNet-50, I3D) against large self-supervised
+            foundation models (DINOv3, V-JEPA2), and use a cached-feature pipeline that decouples
+            expensive visual encoding from lightweight temporal learning.
+          </p>
+          <p>
+            Foundation-model features improve segmentation performance in this setup, with DINOv3
+            ViT-7B achieving the best overall results (<strong>83.4% accuracy, 87.0 edit score</strong>).
+            We further examine cataract-domain transfer using unlabeled videos and lightweight
+            adaptation, and analyze when it helps or hurts. Overall, the study indicates strong
+            transferability of modern vision foundation models to surgical workflow understanding
+            and provides practical guidance for low-label medical video settings.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+
+<!-- Phase Distribution -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Dataset: SICS-155</h2>
+        <div class="content has-text-justified">
+          <p>
+            We evaluate on SICS-155, which contains 155 annotated manual small-incision cataract
+            surgery procedures with frame-level labels over <strong>19 phases</strong>. The dataset
+            exhibits significant class imbalance: <em>cautery</em> accounts for only 1.7% of frames,
+            while <em>cortical wash</em> occupies 13.8%. Short phases such as <em>sideport</em>
+            and <em>scleral groove</em> have median contiguous durations of about 6.5 seconds.
+          </p>
+        </div>
+        <div class="figure-container has-text-centered">
+          <img src="./static/images/paper_phase_distribution.png"
+               alt="SICS-155 phase distribution at frame level"
+               style="width: 100%; max-width: 900px;">
+          <p class="figure-caption">
+            SICS-155 phase distribution at frame level. The long-tail imbalance motivates
+            representation learning approaches that remain robust under limited labels.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Method Overview -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Method</h2>
+        <div class="content has-text-justified">
+          <p>
+            We adopt a deployment-oriented factorization: a large visual encoder produces frozen
+            per-frame features, and a lightweight temporal model (MS-TCN++) maps cached features
+            to phase labels. This decoupling enables controlled comparisons, reduces downstream
+            training cost, and matches realistic deployment where expensive feature extraction is
+            run once offline.
+          </p>
+          <p>
+            We compare two encoder groups:
+          </p>
+          <ul>
+            <li><strong>Supervised encoders:</strong> ResNet-50 (ImageNet) and I3D (Kinetics)</li>
+            <li><strong>Self-supervised foundation models:</strong> DINOv3 (image ViTs) and V-JEPA2 (video ViTs)</li>
+          </ul>
+          <p>
+            We further study <strong>CataractFT</strong>, an exploratory cataract-domain transfer
+            workflow combining self-supervised continuation on 1,000 unlabeled Cataract-1K videos
+            and optional LoRA adaptation before frozen feature extraction on SICS-155.
+          </p>
+        </div>
+
+        <!-- Encoder specs table -->
+        <h3 class="title is-4">Feature Extractor Backbones</h3>
+        <div class="table-wrapper">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Encoder</th>
+                <th>Pretraining</th>
+                <th>Modality</th>
+                <th>Input</th>
+                <th>Feat Dim</th>
+                <th>Params</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ResNet-50</td>
+                <td>Supervised (ImageNet-1K)</td>
+                <td>2D image</td>
+                <td>224</td>
+                <td>2048</td>
+                <td>25.6M</td>
+              </tr>
+              <tr>
+                <td>I3D-R50</td>
+                <td>Supervised (Kinetics-400)</td>
+                <td>3D video</td>
+                <td>224</td>
+                <td>2048</td>
+                <td>28.0M</td>
+              </tr>
+              <tr>
+                <td>DINOv3 ViT-B/16</td>
+                <td>Self-supervised (LVD-1689M)</td>
+                <td>2D image</td>
+                <td>224</td>
+                <td>768</td>
+                <td>85.7M</td>
+              </tr>
+              <tr>
+                <td>DINOv3 ViT-L/16</td>
+                <td>Self-supervised (LVD-1689M)</td>
+                <td>2D image</td>
+                <td>224</td>
+                <td>1024</td>
+                <td>300M</td>
+              </tr>
+              <tr>
+                <td>DINOv3 ViT-7B/16</td>
+                <td>Self-supervised (LVD-1689M)</td>
+                <td>2D image</td>
+                <td>224</td>
+                <td>4096</td>
+                <td>6.716B</td>
+              </tr>
+              <tr>
+                <td>V-JEPA2 ViT-L</td>
+                <td>Self-supervised video (Meta)</td>
+                <td>3D video</td>
+                <td>256</td>
+                <td>1024</td>
+                <td>326.0M</td>
+              </tr>
+              <tr>
+                <td>V-JEPA2 ViT-g/16</td>
+                <td>Self-supervised video (Meta)</td>
+                <td>3D video</td>
+                <td>384</td>
+                <td>1408</td>
+                <td>1.03B</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Results -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Results</h2>
+
+        <!-- Main Results Table -->
+        <h3 class="title is-4">Cross-Model Comparison (5-Fold CV)</h3>
+        <div class="content has-text-justified">
+          <p>
+            Self-supervised DINOv3 features outperform supervised encoders on average.
+            DINOv3 ViT-7B achieves the best results across all metrics with 83.4% accuracy
+            and 87.0 edit score. We observe a consistent within-family scaling trend for
+            DINOv3 (ViT-B &lt; ViT-L &lt; ViT-7B).
+          </p>
+        </div>
+        <div class="table-wrapper">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Accuracy</th>
+                <th>Macro-F1</th>
+                <th>Edit Score</th>
+                <th>PR-AUC</th>
+                <th>F1@10</th>
+                <th>F1@25</th>
+                <th>F1@50</th>
+                <th>mIoU</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ResNet-50 (ImageNet)</td>
+                <td>75.7 ± 1.1</td>
+                <td>67.7 ± 1.4</td>
+                <td>79.3 ± 1.5</td>
+                <td>71.8 ± 1.2</td>
+                <td>79.8 ± 1.1</td>
+                <td>75.3 ± 2.0</td>
+                <td>62.2 ± 2.5</td>
+                <td>53.5 ± 1.6</td>
+              </tr>
+              <tr>
+                <td>I3D</td>
+                <td>79.8 ± 0.9</td>
+                <td>71.7 ± 1.4</td>
+                <td>82.6 ± 2.5</td>
+                <td>75.7 ± 1.1</td>
+                <td>83.2 ± 2.5</td>
+                <td>79.2 ± 3.2</td>
+                <td>68.9 ± 2.6</td>
+                <td>58.3 ± 1.8</td>
+              </tr>
+              <tr>
+                <td>DINOv3 ViT-B/16</td>
+                <td>78.4 ± 0.7</td>
+                <td>71.2 ± 0.9</td>
+                <td>82.5 ± 1.7</td>
+                <td>75.0 ± 1.2</td>
+                <td>83.8 ± 1.1</td>
+                <td>79.9 ± 1.8</td>
+                <td>68.2 ± 2.0</td>
+                <td>57.0 ± 2.0</td>
+              </tr>
+              <tr>
+                <td>DINOv3 ViT-L/16</td>
+                <td>82.2 ± 1.3</td>
+                <td>75.8 ± 2.1</td>
+                <td>85.7 ± 1.7</td>
+                <td>78.5 ± 1.3</td>
+                <td>87.2 ± 1.8</td>
+                <td>84.4 ± 2.5</td>
+                <td>73.7 ± 4.4</td>
+                <td>62.4 ± 3.6</td>
+              </tr>
+              <tr class="best">
+                <td><strong>DINOv3 ViT-7B/16</strong></td>
+                <td><strong>83.4 ± 1.4</strong></td>
+                <td><strong>76.5 ± 2.0</strong></td>
+                <td><strong>87.0 ± 1.5</strong></td>
+                <td><strong>79.4 ± 1.7</strong></td>
+                <td><strong>88.0 ± 2.2</strong></td>
+                <td><strong>84.5 ± 2.6</strong></td>
+                <td><strong>75.0 ± 1.8</strong></td>
+                <td><strong>64.1 ± 3.2</strong></td>
+              </tr>
+              <tr>
+                <td>V-JEPA2 ViT-L</td>
+                <td>77.9 ± 1.0</td>
+                <td>69.9 ± 0.5</td>
+                <td>83.2 ± 1.0</td>
+                <td>74.2 ± 0.6</td>
+                <td>83.0 ± 0.9</td>
+                <td>78.2 ± 1.5</td>
+                <td>66.6 ± 1.7</td>
+                <td>55.6 ± 2.3</td>
+              </tr>
+              <tr>
+                <td>V-JEPA2 ViT-g</td>
+                <td>76.0 ± 1.0</td>
+                <td>67.5 ± 1.2</td>
+                <td>81.2 ± 2.6</td>
+                <td>72.2 ± 0.7</td>
+                <td>80.6 ± 2.5</td>
+                <td>76.5 ± 2.2</td>
+                <td>63.8 ± 2.6</td>
+                <td>53.2 ± 2.1</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="figure-caption" style="font-style: normal; color: #333;">
+          5-Fold Cross Validation Results on SICS-155 (mean ± std, %). Best per metric is highlighted.
+        </p>
+
+        <!-- Qualitative Results -->
+        <h3 class="title is-4" style="margin-top: 2rem;">Qualitative Results</h3>
+        <div class="figure-container has-text-centered">
+          <img src="./static/images/paper_qualitative_ribbons.png"
+               alt="Qualitative phase segmentation results"
+               style="width: 100%;">
+          <p class="figure-caption">
+            Qualitative phase segmentation results. For each video, rows show ground truth,
+            the supervised baseline (ResNet-50), a foundation-model alternative (V-JEPA2 ViT-L),
+            and the best-performing model (DINOv3 ViT-7B), all with the same temporal head.
+          </p>
+        </div>
+
+        <!-- Segmentation Keyframes -->
+        <div class="figure-container has-text-centered" style="margin-top: 2rem;">
+          <img src="./static/images/paper_segmentation_keyframes.png"
+               alt="Segmentation keyframes"
+               style="width: 100%;">
+          <p class="figure-caption">
+            Aligned keyframes with sampled timepoints and corresponding ground-truth/predicted phases.
+          </p>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- CataractFT Results -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Domain Adaptation: CataractFT</h2>
+        <div class="content has-text-justified">
+          <p>
+            We explore <strong>CataractFT</strong>: self-supervised continuation on 1,000 unlabeled
+            Cataract-1K videos, optional LoRA fine-tuning on annotated cataract surgeries, and
+            frozen feature extraction for the same SICS temporal head. Transfer results are mixed
+            and backbone-dependent.
+          </p>
+        </div>
+
+        <!-- CataractFT Transfer Table -->
+        <h3 class="title is-4">CataractFT Transfer Deltas</h3>
+        <div class="table-wrapper">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Encoder</th>
+                <th>Acc (FT)</th>
+                <th>ΔAcc</th>
+                <th>ΔMacro-F1</th>
+                <th>ΔEdit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="best">
+                <td>DINOv3 ViT-B/16</td>
+                <td>81.27</td>
+                <td><strong>+2.86</strong></td>
+                <td><strong>+2.87</strong></td>
+                <td><strong>+1.66</strong></td>
+              </tr>
+              <tr>
+                <td>DINOv3 ViT-L/16</td>
+                <td>81.26</td>
+                <td>−0.93</td>
+                <td>−1.82</td>
+                <td>−0.69</td>
+              </tr>
+              <tr>
+                <td>V-JEPA2 ViT-L</td>
+                <td>71.53</td>
+                <td>−6.37</td>
+                <td>−8.08</td>
+                <td>−3.31</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="figure-caption" style="font-style: normal; color: #333;">
+          Preliminary CataractFT transfer to SICS-155. Deltas are relative to the corresponding base encoder.
+        </p>
+
+        <!-- CataractFT Ablation Table -->
+        <h3 class="title is-4" style="margin-top: 2rem;">CataractFT Ablation</h3>
+        <div class="table-wrapper">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Encoder</th>
+                <th>Variant</th>
+                <th>Accuracy</th>
+                <th>Macro-F1</th>
+                <th>Edit</th>
+                <th>PR-AUC</th>
+                <th>F1@50</th>
+                <th>mIoU</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td rowspan="3">DINOv3 ViT-B/16</td>
+                <td>Base</td>
+                <td>78.41 ± 0.71</td>
+                <td>71.23 ± 0.87</td>
+                <td>82.55 ± 1.71</td>
+                <td>75.04 ± 1.23</td>
+                <td>68.20 ± 1.96</td>
+                <td>57.01 ± 1.96</td>
+              </tr>
+              <tr>
+                <td>SSL-only</td>
+                <td>78.26 ± 1.86</td>
+                <td>70.45 ± 2.19</td>
+                <td class="best"><strong>85.50 ± 1.61</strong></td>
+                <td>74.74 ± 1.66</td>
+                <td>68.83 ± 3.47</td>
+                <td>57.31 ± 2.20</td>
+              </tr>
+              <tr>
+                <td>CataractFT + LoRA</td>
+                <td class="best"><strong>81.27 ± 1.84</strong></td>
+                <td class="best"><strong>74.10 ± 2.23</strong></td>
+                <td>84.21 ± 2.58</td>
+                <td class="best"><strong>77.03 ± 2.02</strong></td>
+                <td class="best"><strong>70.58 ± 3.02</strong></td>
+                <td class="best"><strong>61.46 ± 2.61</strong></td>
+              </tr>
+              <tr class="section-divider">
+                <td rowspan="3">DINOv3 ViT-L/16</td>
+                <td>Base</td>
+                <td class="best"><strong>82.19 ± 1.28</strong></td>
+                <td class="best"><strong>75.80 ± 2.07</strong></td>
+                <td>85.71 ± 1.74</td>
+                <td class="best"><strong>78.50 ± 1.31</strong></td>
+                <td class="best"><strong>73.74 ± 4.44</strong></td>
+                <td class="best"><strong>62.40 ± 3.61</strong></td>
+              </tr>
+              <tr>
+                <td>SSL-only</td>
+                <td>80.80 ± 1.31</td>
+                <td>72.56 ± 1.33</td>
+                <td class="best"><strong>86.82 ± 0.56</strong></td>
+                <td>77.08 ± 0.84</td>
+                <td>70.74 ± 1.51</td>
+                <td>59.58 ± 3.20</td>
+              </tr>
+              <tr>
+                <td>CataractFT + LoRA</td>
+                <td>81.26 ± 0.91</td>
+                <td>73.98 ± 1.02</td>
+                <td>85.02 ± 2.04</td>
+                <td>77.93 ± 0.96</td>
+                <td>71.84 ± 3.22</td>
+                <td>61.23 ± 2.55</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="figure-caption" style="font-style: normal; color: #333;">
+          CataractFT ablation: Base uses the encoder as a standard frozen extractor,
+          SSL-only continues from the cataract-domain checkpoint without LoRA,
+          and CataractFT + LoRA applies the full adaptation pipeline.
+        </p>
+
+        <!-- Phase Delta Heatmap -->
+        <h3 class="title is-4" style="margin-top: 2rem;">Per-Phase Transfer Effects</h3>
+        <div class="figure-container has-text-centered">
+          <img src="./static/images/paper_cataractft_phase_delta_heatmap.png"
+               alt="Per-phase delta heatmap for CataractFT"
+               style="width: 100%; max-width: 900px;">
+          <p class="figure-caption">
+            Per-phase change from CataractFT + LoRA relative to SSL-only continuation.
+            Positive values indicate phases that benefit from LoRA adaptation;
+            negative values indicate phases where the checkpoint-only variant remains better.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- BibTeX -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@inproceedings{spencer2026dataefficient,
+  author    = {Spencer, Lincoln and Wang, Song and Chen, Chen},
+  title     = {Data-Efficient Surgical Phase Segmentation in Small-Incision Cataract Surgery: A Controlled Study of Vision Foundation Models},
+  booktitle = {CVPR Workshop on Computer Vision for Small Data},
+  year      = {2026},
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            Website template borrowed from <a
+              href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
